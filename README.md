@@ -1,6 +1,6 @@
 # casic
 
-Java project to control del casic interface. 
+Java project to control casic interface. 
 
 The casic interface is used to emulate a cassette drive conected to an Atari XL/XE system.
 
