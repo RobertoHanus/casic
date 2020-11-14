@@ -25,7 +25,7 @@ public class Chunk {
     private short entireChunkLength;
 
     /* Can create Chunk */
-    private boolean creationResult;
+    private boolean creationResult = false;
 
     public byte[] getType() {
         return type;
@@ -48,24 +48,20 @@ public class Chunk {
     }
 
     public Chunk(ByteBuffer buffer) {
+        creationResult = false;
         if (buffer.remaining() >= 8) {
             buffer.get(type);
             buffer.get(length);
             length = Utils.LittleToBigEndian(length);
             buffer.get(aux);
             aux = Utils.LittleToBigEndian(aux);
-        } else {
-            creationResult = false;
+            if (buffer.remaining() >= getLength()) {
+                data = new byte[getLength()];
+                buffer.get(data);
+                creationResult = true;
+                entireChunkLength = (short) (getLength() + 8);
+            }
         }
-
-        if (buffer.remaining() >= getLength()) {
-            data = new byte[getLength()];
-            buffer.get(data);
-            creationResult = true;
-        } else {
-            creationResult = false;
-        }
-        entireChunkLength = (short) (getLength() + 8);
     }
 
     public boolean getCreationResult() {

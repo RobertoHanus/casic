@@ -19,12 +19,13 @@ public class ChunkArray {
 
     public ChunkArray(byte[] stream) {
         ByteBuffer buffer = ByteBuffer.wrap(stream);
-        
-        
+
+        Chunk chunk;
         do {
-            Chunk chunk = new Chunk(buffer);
-            array.add(chunk);
-        } 
+            chunk = new Chunk(buffer);
+            array.add(chunk);            
+        } while(chunk.getCreationResult());
+
     }
 
     public ArrayList<Chunk> getArray() {

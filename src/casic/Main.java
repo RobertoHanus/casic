@@ -24,7 +24,7 @@ public class Main {
         // TODO code application logic here
 
         InputStream inputStream = new FileInputStream(args[0]);
-        byte[] fileData = new byte[5000];
+        byte[] fileData = new byte[18000];
         inputStream.read(fileData);
 
         // Chunk chunk = new Chunk(fileData);
