@@ -17,9 +17,11 @@ public class Chunk {
     /* Chunk header */
     private byte[] type = new byte[4];
     private byte[] length = new byte[2];
+    /* Little endian stored */
     private byte[] aux = new byte[2];
+    /* Little endian stored */
 
-    /* Chunk data */
+ /* Chunk data */
     private byte[] data;
 
     /* Chunk length including data and header */
@@ -27,10 +29,9 @@ public class Chunk {
 
     /* Can create Chunk */
     private boolean creationResult = false;
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return (new String(type));
     }
 
@@ -39,11 +40,13 @@ public class Chunk {
     }
 
     public short getLength() {
-        return ByteBuffer.wrap(length).getShort();
+        byte[] shortInteger = Utils.changeEndianess(length);
+        return ByteBuffer.wrap(shortInteger).getShort();
     }
 
     public short getAux() {
-        return ByteBuffer.wrap(aux).getShort();
+        byte[] shortInteger = Utils.changeEndianess(aux);
+        return ByteBuffer.wrap(shortInteger).getShort();
     }
 
     public byte[] getData() {
@@ -59,9 +62,7 @@ public class Chunk {
         if (buffer.remaining() >= 8) {
             buffer.get(type);
             buffer.get(length);
-            length = Utils.LittleToBigEndian(length);
             buffer.get(aux);
-            aux = Utils.LittleToBigEndian(aux);
             if (buffer.remaining() >= getLength()) {
                 data = new byte[getLength()];
                 buffer.get(data);
@@ -70,8 +71,41 @@ public class Chunk {
             }
         }
     }
-        
+
+    public void setType(String string) {
+        type = string.getBytes();
+    }
+
+    public void setLength(int integer) {
+        length = ByteBuffer.allocate(2).putShort((short)integer).array();
+        length = Utils.changeEndianess(length);
+        entireChunkLength = (short) (getLength() + 8);
+    }
+
+    public void setAux(int integer) {
+        aux = ByteBuffer.allocate(2).putShort((short)integer).array();
+        aux = Utils.changeEndianess(aux);
+    }
+
+    public void setData(byte[] data) {
+        if(data != null) {
+            this.data = data.clone();
+        }
+    }
+
+    public Chunk() {
+    }
+
     public boolean getCreationResult() {
         return creationResult;
+    }
+
+    public byte[] array() {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(entireChunkLength);
+        byteBuffer.put(type);
+        byteBuffer.put(length);
+        byteBuffer.put(aux);
+        byteBuffer.put(data);
+        return byteBuffer.array();
     }
 }

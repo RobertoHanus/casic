@@ -10,7 +10,7 @@ package casic;
  * @author SpongeBob
  */
 public class Utils {
-    public static byte[] LittleToBigEndian(byte[] bytes)
+    public static byte[] changeEndianess(byte[] bytes)
     {
         byte[] output = new byte[bytes.length];
         for(int i = 0; i<bytes.length;i++)

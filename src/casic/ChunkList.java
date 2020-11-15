@@ -13,22 +13,29 @@ import java.util.ArrayList;
  *
  * @author SpongeBob
  */
-public class ChunkArray {
+public class ChunkList {
 
-    private ArrayList<Chunk> array = new ArrayList<Chunk>();
+    private ArrayList<Chunk> list = new ArrayList<Chunk>();
 
-    public ChunkArray(byte[] stream) {
+    public ChunkList(byte[] stream) {
         ByteBuffer buffer = ByteBuffer.wrap(stream);
 
         Chunk chunk;
         chunk = new Chunk(buffer);
         while (chunk.getCreationResult()) {
-            array.add(chunk);
+            list.add(chunk);
             chunk = new Chunk(buffer);
         }
     }
+    
+    public ChunkList() {
+    }
+    
+    public void add(Chunk chunk) {
+        list.add(chunk);
+    }
 
-    public ArrayList<Chunk> getArray() {
-        return array;
+    public ArrayList<Chunk> list() {
+        return list;
     }
 }

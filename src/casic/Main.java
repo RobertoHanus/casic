@@ -24,18 +24,18 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    @SuppressWarnings("SleepWhileInLoop")
+    @SuppressWarnings({"SleepWhileInLoop", "empty-statement"})
     public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
         // TODO code application logic here
-        
+
         /* COM Port initialization */
         SerialPort commPort = SerialPort.getCommPort(args[1].toUpperCase());
         commPort.openPort();
         commPort.setComPortParameters(600, 8, 1, 0);
-        
+
         /* Select mode PLAY or REC */
         switch (args[0]) {
-            case "play":
+            case "play": {
                 /* Get file size and create a byte array with data */
                 InputStream inputStream = new FileInputStream(args[2]);
                 int fileSize = (int) (new File(args[2])).length();
@@ -43,11 +43,11 @@ public class Main {
                 inputStream.read(fileData);
 
                 /* Creates an array of Chunks */
-                ChunkArray chunkArray = new ChunkArray(fileData);
+                ChunkList chunkList = new ChunkList(fileData);
 
                 int i = 1;
-                int length = chunkArray.getArray().size();
-                for (Chunk chunk : chunkArray.getArray()) {
+                int length = chunkList.list().size();
+                for (Chunk chunk : chunkList.list()) {
                     System.out.println("Chunk Type: " + chunk.toString() + " Chunk " + i + " of " + length);
                     if (chunk.toString().equals("data")) {
                         Thread.sleep(chunk.getAux());
@@ -56,11 +56,51 @@ public class Main {
                     }
                     i++;
                 }
-                break;
-            case "rec":
+            }
+            break;
+            case "rec": {
+                ChunkList chunkList = new ChunkList();
+
+                Chunk chunk = new Chunk();
+                chunk.setType("FUJI");
+                chunk.setLength(0);
+                chunk.setAux(0);
+                chunk.setData(null);
+                chunkList.add(chunk);
+
+                chunk = new Chunk();
+                chunk.setType("baud");
+                chunk.setLength(0);
+                chunk.setAux(600);
+                chunkList.add(chunk);
+
+                while (true) {
+                    chunk = new Chunk();
+                    chunk.setType("data");
+                    chunk.setLength(132);
+                    short start = (short) System.currentTimeMillis();
+                    while (commPort.bytesAvailable() == 0);
+                    short elapsed = (short) (System.currentTimeMillis() - start);
+                    chunk.setAux(elapsed);
+                    while (commPort.bytesAvailable() < chunk.getLength());
+                    byte[] buffer = new byte[chunk.getLength()];
+                    commPort.readBytes(buffer, chunk.getLength());
+                    chunk.setData(buffer);
+                    chunkList.add(chunk);
+                    if (chunk.getData()[2] == 0xFE) {
+                        break;
+                    }
+                }
+
                 OutputStream outputStream = new FileOutputStream(args[2]);
-                
-                break;
+
+                for (Chunk chunk_ : chunkList.list()) {
+                    outputStream.write(chunk_.array());
+                }
+            }
+            break;
         }
+
+        commPort.closePort();
     }
 }
