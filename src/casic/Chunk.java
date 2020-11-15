@@ -70,7 +70,7 @@ public class Chunk {
             }
         }
     }
-
+        
     public boolean getCreationResult() {
         return creationResult;
     }
