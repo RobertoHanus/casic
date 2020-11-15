@@ -26,7 +26,7 @@ public class Main {
         // TODO code application logic here
         
         /* Get file size and create a byte array with data */
-        InputStream inputStream = new FileInputStream(args[0]);
+        InputStream inputStream = new FileInputStream(args[1]);
         int fileSize =(int)(new File(args[0])).length();
         byte[] fileData = new byte[fileSize];
         inputStream.read(fileData);
@@ -34,11 +34,20 @@ public class Main {
         /* Creates an array of Chunks */
         ChunkArray chunkArray = new ChunkArray(fileData);
         
+        SerialPort commPort = SerialPort.getCommPort(args[0]);
+        commPort.setComPortParameters(600, 8, 1, 0);
+        commPort.openPort();
+        
         int i=1;
         int length = chunkArray.getArray().size();
         for(Chunk chunk : chunkArray.getArray())
         {
             System.out.println("Chunk Type: " + chunk.toString() + " Chunk " + i + " of " + length);
+            if(chunk.toString().equals("data"))
+            {
+                
+                commPort.writeBytes(chunk.getData(), chunk.getLength());
+            }
             i++;
         }
     }

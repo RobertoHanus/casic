@@ -21,11 +21,11 @@ public class ChunkArray {
         ByteBuffer buffer = ByteBuffer.wrap(stream);
 
         Chunk chunk;
-        do {
+        chunk = new Chunk(buffer);
+        while (chunk.getCreationResult()) {
+            array.add(chunk);
             chunk = new Chunk(buffer);
-            array.add(chunk);            
-        } while(chunk.getCreationResult());
-
+        }
     }
 
     public ArrayList<Chunk> getArray() {
