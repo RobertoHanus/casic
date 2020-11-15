@@ -77,18 +77,18 @@ public class Chunk {
     }
 
     public void setLength(int integer) {
-        length = ByteBuffer.allocate(2).putShort((short)integer).array();
+        length = ByteBuffer.allocate(2).putShort((short) integer).array();
         length = Utils.changeEndianess(length);
         entireChunkLength = (short) (getLength() + 8);
     }
 
     public void setAux(int integer) {
-        aux = ByteBuffer.allocate(2).putShort((short)integer).array();
+        aux = ByteBuffer.allocate(2).putShort((short) integer).array();
         aux = Utils.changeEndianess(aux);
     }
 
     public void setData(byte[] data) {
-        if(data != null) {
+        if (data != null) {
             this.data = data.clone();
         }
     }
@@ -105,7 +105,9 @@ public class Chunk {
         byteBuffer.put(type);
         byteBuffer.put(length);
         byteBuffer.put(aux);
-        byteBuffer.put(data);
+        if (getLength() > 0) {
+            byteBuffer.put(data);
+        }
         return byteBuffer.array();
     }
 }

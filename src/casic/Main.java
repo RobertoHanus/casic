@@ -78,16 +78,17 @@ public class Main {
                     chunk = new Chunk();
                     chunk.setType("data");
                     chunk.setLength(132);
-                    short start = (short) System.currentTimeMillis();
+                    long start = System.currentTimeMillis();
                     while (commPort.bytesAvailable() == 0);
-                    short elapsed = (short) (System.currentTimeMillis() - start);
+                    short elapsed = (short)(System.currentTimeMillis() - start);
                     chunk.setAux(elapsed);
                     while (commPort.bytesAvailable() < chunk.getLength());
                     byte[] buffer = new byte[chunk.getLength()];
                     commPort.readBytes(buffer, chunk.getLength());
                     chunk.setData(buffer);
                     chunkList.add(chunk);
-                    if (chunk.getData()[2] == 0xFE) {
+                    System.out.println(String.format("0x%01X", chunk.getData()[2]));
+                    if (chunk.getData()[2] == (byte)0xFE) {
                         break;
                     }
                 }
