@@ -6,6 +6,7 @@
 package casic;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  *
@@ -26,6 +27,12 @@ public class Chunk {
 
     /* Can create Chunk */
     private boolean creationResult = false;
+    
+    @Override
+    public String toString()
+    {
+        return (new String(type));
+    }
 
     public byte[] getType() {
         return type;

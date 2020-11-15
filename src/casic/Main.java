@@ -6,10 +6,12 @@
 package casic;
 
 import com.fazecast.jSerialComm.SerialPort;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -22,12 +24,22 @@ public class Main {
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
         // TODO code application logic here
-
+        
+        /* Get file size and create a byte array with data */
         InputStream inputStream = new FileInputStream(args[0]);
-        byte[] fileData = new byte[18000];
+        int fileSize =(int)(new File(args[0])).length();
+        byte[] fileData = new byte[fileSize];
         inputStream.read(fileData);
-
-        // Chunk chunk = new Chunk(fileData);
+                
+        /* Creates an array of Chunks */
         ChunkArray chunkArray = new ChunkArray(fileData);
+        
+        int i=1;
+        int length = chunkArray.getArray().size();
+        for(Chunk chunk : chunkArray.getArray())
+        {
+            System.out.println("Chunk Type: " + chunk.toString() + " Chunk " + i + " of " + length);
+            i++;
+        }
     }
 }
