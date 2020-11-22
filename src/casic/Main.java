@@ -74,7 +74,8 @@ public class Main {
                 chunk.setAux(600);
                 chunkList.add(chunk);
 
-                for (int i = 0; i < Integer.parseInt(args[3]); i++) {   // Stages
+                short elapsedInterByte = 0;
+                for (int i = 0; i < Integer.parseInt(args[3]); i++) {   // Stages                 
                     while (true) {
                         chunk = new Chunk();
                         chunk.setType("data");
@@ -84,7 +85,8 @@ public class Main {
                             Thread.sleep(1);
                         };
                         short elapsedIRG = (short) (System.currentTimeMillis() - startIRG);
-                        chunk.setAux(elapsedIRG);
+                                                
+                        chunk.setAux(elapsedIRG + elapsedInterByte);
                         // while (commPort.bytesAvailable() < chunk.getLength());
                         
                         byte[] buffer = new byte[1000];
@@ -96,17 +98,16 @@ public class Main {
                             commPort.readBytes(single, 1);
                             buffer[j] = single[0];
                             long startInterByte = System.currentTimeMillis();
-                            short elapsedEndOfStage = 0;
+                            elapsedInterByte = 0;
                             while (commPort.bytesAvailable() == 0) {
                                 Thread.sleep(1);
-                                elapsedEndOfStage = (short) (System.currentTimeMillis() - startInterByte);
-                                if(elapsedEndOfStage > 5000)
+                                elapsedInterByte = (short) (System.currentTimeMillis() - startInterByte);
+                                if(elapsedInterByte > 5000)
                                 {
                                     break;
                                 }
                             }
-                            short elapsedInterByte = (short) (System.currentTimeMillis() - startInterByte);
-                            if(elapsedInterByte > 50)
+                            if(elapsedInterByte > 16.666 * 5)
                             {
                                 break;
                             }
