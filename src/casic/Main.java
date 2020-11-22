@@ -58,6 +58,32 @@ public class Main {
                 }
             }
             break;
+            case "info": {
+                InputStream inputStream = new FileInputStream(args[1]);
+                int fileSize = (int) (new File(args[1])).length();
+                byte[] fileData = new byte[fileSize];
+                inputStream.read(fileData);
+
+                /* Creates an array of Chunks */
+                ChunkList chunkList = new ChunkList(fileData);
+                
+                System.out.println("Chunks count: " + chunkList.list().size());
+                
+                int i=0;
+                for(Chunk chunk: chunkList.list())
+                {
+                    try {
+                    if(chunk.getData()[2] == (byte)0xFE) i++;
+                    }
+                    catch(Exception ex) {
+                        
+                    }
+                }
+                
+                System.out.println("File stages: " + i);
+                
+            } 
+            break;
             case "rec": {
                 ChunkList chunkList = new ChunkList();
 
@@ -85,13 +111,13 @@ public class Main {
                             Thread.sleep(1);
                         };
                         short elapsedIRG = (short) (System.currentTimeMillis() - startIRG);
-                                                
+
                         chunk.setAux(elapsedIRG + elapsedInterByte);
                         // while (commPort.bytesAvailable() < chunk.getLength());
-                        
+
                         byte[] buffer = new byte[1000];
                         // commPort.readBytes(buffer, chunk.getLength());
-                        
+
                         int j;
                         for (j = 0; j < 1000; j++) {
                             byte[] single = new byte[1];
@@ -102,17 +128,15 @@ public class Main {
                             while (commPort.bytesAvailable() == 0) {
                                 Thread.sleep(1);
                                 elapsedInterByte = (short) (System.currentTimeMillis() - startInterByte);
-                                if(elapsedInterByte > 5000)
-                                {
+                                if (elapsedInterByte > 5000) {
                                     break;
                                 }
                             }
-                            if(elapsedInterByte > 16.666 * 5)
-                            {
+                            if (elapsedInterByte > 16.666 * 5) {
                                 break;
                             }
                         }
-                        
+
                         chunk.setLength(j + 1);
                         // commPort.readBytes(buffer, chunk.getLength());
                         chunk.setData(buffer);
