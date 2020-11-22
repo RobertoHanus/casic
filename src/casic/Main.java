@@ -74,22 +74,52 @@ public class Main {
                 chunk.setAux(600);
                 chunkList.add(chunk);
 
-                while (true) {
-                    chunk = new Chunk();
-                    chunk.setType("data");
-                    chunk.setLength(132);
-                    long start = System.currentTimeMillis();
-                    while (commPort.bytesAvailable() == 0);
-                    short elapsed = (short)(System.currentTimeMillis() - start);
-                    chunk.setAux(elapsed);
-                    while (commPort.bytesAvailable() < chunk.getLength());
-                    byte[] buffer = new byte[chunk.getLength()];
-                    commPort.readBytes(buffer, chunk.getLength());
-                    chunk.setData(buffer);
-                    chunkList.add(chunk);
-                    System.out.println(String.format("0x%01X", chunk.getData()[2]));
-                    if (chunk.getData()[2] == (byte)0xFE) {
-                        break;
+                for (int i = 0; i < Integer.parseInt(args[3]); i++) {   // Stages
+                    while (true) {
+                        chunk = new Chunk();
+                        chunk.setType("data");
+                        // chunk.setLength(132);
+                        long startIRG = System.currentTimeMillis();
+                        while (commPort.bytesAvailable() == 0) {
+                            Thread.sleep(1);
+                        };
+                        short elapsedIRG = (short) (System.currentTimeMillis() - startIRG);
+                        chunk.setAux(elapsedIRG);
+                        // while (commPort.bytesAvailable() < chunk.getLength());
+                        
+                        byte[] buffer = new byte[1000];
+                        // commPort.readBytes(buffer, chunk.getLength());
+                        
+                        int j;
+                        for (j = 0; j < 1000; j++) {
+                            byte[] single = new byte[1];
+                            commPort.readBytes(single, 1);
+                            buffer[j] = single[0];
+                            long startInterByte = System.currentTimeMillis();
+                            short elapsedEndOfStage = 0;
+                            while (commPort.bytesAvailable() == 0) {
+                                Thread.sleep(1);
+                                elapsedEndOfStage = (short) (System.currentTimeMillis() - startInterByte);
+                                if(elapsedEndOfStage > 5000)
+                                {
+                                    break;
+                                }
+                            }
+                            short elapsedInterByte = (short) (System.currentTimeMillis() - startInterByte);
+                            if(elapsedInterByte > 25)
+                            {
+                                break;
+                            }
+                        }
+                        
+                        chunk.setLength(j + 1);
+                        // commPort.readBytes(buffer, chunk.getLength());
+                        chunk.setData(buffer);
+                        chunkList.add(chunk);
+                        System.out.println(String.format("0x%01X", chunk.getData()[2]));
+                        if (chunk.getData()[2] == (byte) 0xFE) {
+                            break;
+                        }
                     }
                 }
 
