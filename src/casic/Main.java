@@ -44,7 +44,7 @@ public class Main {
 
                 /* Creates an array of Chunks */
                 ChunkList chunkList = new ChunkList(fileData);
-
+                               
                 int i = 1;
                 int length = chunkList.list().size();
                 for (Chunk chunk : chunkList.list()) {
@@ -54,6 +54,18 @@ public class Main {
                         commPort.writeBytes(chunk.getData(), chunk.getLength());
                         Thread.sleep((int) (chunk.getLength() * 16.666));
                     }
+                    /*
+                    if(chunk.getData()!= null) {
+                        if(chunk.getData().length >= 3) {
+                            if(chunk.getData()[2] == (byte)0xFE)
+                            {
+                                System.out.println("Reached end of stage. Waiting...");
+                                System.out.println("Press any key to continue with next stage.");
+                                System.in.read();
+                            }
+                        }
+                    }*/
+                    
                     i++;
                 }
             }
