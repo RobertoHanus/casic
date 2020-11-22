@@ -106,7 +106,7 @@ public class Main {
                                 }
                             }
                             short elapsedInterByte = (short) (System.currentTimeMillis() - startInterByte);
-                            if(elapsedInterByte > 25)
+                            if(elapsedInterByte > 50)
                             {
                                 break;
                             }
