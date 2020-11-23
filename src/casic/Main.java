@@ -113,17 +113,27 @@ public class Main {
                 chunkList.add(chunk);
 
                 short elapsedInterByte = 0;
-                for (int i = 0; i < Integer.parseInt(args[3]); i++) {   // Stages                 
+                short elapsedIRG = 0;
+                boolean endOfFile = false;
+                while(elapsedIRG < 30000) {   
                     while (true) {
                         chunk = new Chunk();
                         chunk.setType("data");
                         // chunk.setLength(132);
                         long startIRG = System.currentTimeMillis();
+                        
+                        elapsedIRG = 0;
                         while (commPort.bytesAvailable() == 0) {
                             Thread.sleep(1);
-                        };
-                        short elapsedIRG = (short) (System.currentTimeMillis() - startIRG);
-
+                            elapsedIRG = (short) (System.currentTimeMillis() - startIRG);
+                            if(elapsedIRG > 30000)
+                            {
+                                endOfFile = true;
+                                break;
+                            }
+                        };                        
+                        if(endOfFile) break;
+                        
                         chunk.setAux(elapsedIRG + elapsedInterByte);
                         // while (commPort.bytesAvailable() < chunk.getLength());
 
@@ -154,7 +164,8 @@ public class Main {
                         chunk.setData(buffer);
                         chunkList.add(chunk);
                         System.out.println(String.format("0x%01X", chunk.getData()[2]));
-                        if (chunk.getData()[2] == (byte) 0xFE) {
+                        // if (chunk.getData()[2] == (byte) 0xFE) {
+                        if(elapsedInterByte > 5000) {
                             break;
                         }
                     }
